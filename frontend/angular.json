@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "scss"
+      "style": "scss"
     }
   },
   "projects": {
@@ -16,23 +16,56 @@
       "schematics": {},
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/assets"
-            ],
+            "assets": ["src/assets"],
             "styles": [
               "src/styles.scss",
               "node_modules/material-icons/iconfont/material-icons.scss",
-              "node_modules/flag-icon-css/sass/flag-icon.scss",
-              "node_modules/font-mfizz/dist/font-mfizz.css"
+              "node_modules/flag-icons/css/flag-icons.min.css",
+              "node_modules/font-mfizz/dist/font-mfizz.css",
+              "node_modules/highlight.js/styles/github.css",
+              "node_modules/codemirror/lib/codemirror.css",
+              "node_modules/codemirror/theme/dracula.css"
             ],
-            "scripts": []
+            "allowedCommonJsDependencies": [
+              "jwt-decode",
+              "file-saver",
+              "socket.io-client",
+              "socket.io-parser",
+              "debug",
+              "qrious",
+              "diff-match-patch",
+              "codemirror",
+              "bn.js",
+              "aes-js",
+              "scrypt-js",
+              "bech32",
+              "hash.js",
+              "eventemitter3",
+              "ethers/lib/ethers",
+              "ethers/lib/utils",
+              "js-sha3"
+            ],
+            "scripts": [],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true,
+            "customWebpackConfig": {
+              "path": "./webpack.angular.js",
+              "mergeRules": {
+                "externals": "replace"
+              }
+            }
           },
           "configurations": {
             "production": {
@@ -45,14 +78,14 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -78,30 +111,26 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "src/assets"
-            ],
-            "codeCoverage": true
+            "assets": ["src/assets"],
+            "codeCoverage": true,
+            "codeCoverageExclude": ["src/hacking-instructor/**/*.ts"]
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/app/**/*.ts",
+              "src/hacking-instructor/**/*.ts"
             ]
           }
         }
       }
     }
   },
-  "defaultProject": "frontend"
+  "cli": {
+    "analytics": false
+  }
 }

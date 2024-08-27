@@ -1,11 +1,16 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import {
   waitForInputToHaveValue,
   waitForInputToNotBeEmpty,
   waitForElementToGetClicked,
   waitInMs,
-  sleep, waitForAngularRouteToBeVisited
+  waitForAngularRouteToBeVisited, waitForLogOut
 } from '../helpers/helpers'
-import { ChallengeInstruction } from '../'
+import { type ChallengeInstruction } from '../'
 
 export const LoginAdminInstruction: ChallengeInstruction = {
   name: 'Login Admin',
@@ -15,19 +20,13 @@ export const LoginAdminInstruction: ChallengeInstruction = {
         "To start this challenge, you'll have to log out first.",
       fixture: '#navbarAccount',
       unskippable: true,
-      async resolved () {
-        while (true) {
-          if (localStorage.getItem('token') === null) {
-            break
-          }
-          await sleep(100)
-        }
-      }
+      resolved: waitForLogOut()
     },
     {
       text:
         "Let's try if we find a way to log in with the administrator's user account. To begin, go to the _Login_ page via the _Account_ menu.",
       fixture: 'app-navbar',
+      fixtureAfter: true,
       unskippable: true,
       resolved: waitForAngularRouteToBeVisited('login')
     },
@@ -70,7 +69,7 @@ export const LoginAdminInstruction: ChallengeInstruction = {
       resolved: waitInMs(10000)
     },
     {
-      text: 'Did you spot the error message with the `SQLITE_ERROR` and the entire SQL query in the console output? If not, keep the console open and click _Log in_ again. Then inspect the occuring log message closely.',
+      text: 'Did you spot the error message with the `SQLITE_ERROR` and the entire SQL query in the 500 response to `/login`? If not, keep the network tab open and click _Log in_ again. Then inspect the occuring response closely.',
       fixture: '#rememberMe',
       resolved: waitInMs(30000)
     },
@@ -87,7 +86,7 @@ export const LoginAdminInstruction: ChallengeInstruction = {
       resolved: waitForElementToGetClicked('#loginButton')
     },
     {
-      text: 'Mhh... The query is still invalid? Can you see why from the new error in the console?',
+      text: 'Mhh... The query is still invalid? Can you see why from the new error in the HTTP response?',
       fixture: '#rememberMe',
       resolved: waitInMs(8000)
     },

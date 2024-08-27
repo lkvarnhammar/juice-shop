@@ -1,5 +1,10 @@
-import { Component, OnInit } from '@angular/core'
-import { FormControl, Validators } from '@angular/forms'
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
+import { Component, type OnInit } from '@angular/core'
+import { UntypedFormControl, Validators } from '@angular/forms'
 import { ImageCaptchaService } from '../Services/image-captcha.service'
 import { DataSubjectService } from '../Services/data-subject.service'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -10,9 +15,8 @@ import { DomSanitizer } from '@angular/platform-browser'
   styleUrls: ['./data-export.component.scss']
 })
 export class DataExportComponent implements OnInit {
-
-  public captchaControl: FormControl = new FormControl('', [Validators.required, Validators.minLength(5)])
-  public formatControl: FormControl = new FormControl('', [Validators.required])
+  public captchaControl: UntypedFormControl = new UntypedFormControl('', [Validators.required, Validators.minLength(5)])
+  public formatControl: UntypedFormControl = new UntypedFormControl('', [Validators.required])
   public captcha: any
   private dataRequest: any = undefined
   public confirmation: any
@@ -21,15 +25,15 @@ export class DataExportComponent implements OnInit {
   public presenceOfCaptcha: boolean = false
   public userData: any
 
-  constructor (public sanitizer: DomSanitizer, private imageCaptchaService: ImageCaptchaService, private dataSubjectService: DataSubjectService) { }
+  constructor (public sanitizer: DomSanitizer, private readonly imageCaptchaService: ImageCaptchaService, private readonly dataSubjectService: DataSubjectService) { }
   ngOnInit () {
     this.needCaptcha()
     this.dataRequest = {}
   }
 
   needCaptcha () {
-    let nowTime = new Date()
-    let timeOfCaptcha = localStorage.getItem('lstdtxprt') ? new Date(JSON.parse(String(localStorage.getItem('lstdtxprt')))) : new Date(0)
+    const nowTime = new Date()
+    const timeOfCaptcha = localStorage.getItem('lstdtxprt') ? new Date(JSON.parse(String(localStorage.getItem('lstdtxprt')))) : new Date(0)
     if (nowTime.getTime() - timeOfCaptcha.getTime() < 300000) {
       this.getNewCaptcha()
       this.presenceOfCaptcha = true
@@ -51,9 +55,9 @@ export class DataExportComponent implements OnInit {
       this.error = null
       this.confirmation = data.confirmation
       this.userData = data.userData
-      window.open('', '_blank', 'width=500')!.document.write(this.userData)
+      window.open('', '_blank', 'width=500')?.document.write(this.userData)
       this.lastSuccessfulTry = new Date()
-      localStorage.setItem('lstdtxprt',JSON.stringify(this.lastSuccessfulTry))
+      localStorage.setItem('lstdtxprt', JSON.stringify(this.lastSuccessfulTry))
       this.ngOnInit()
       this.resetForm()
     }, (error) => {

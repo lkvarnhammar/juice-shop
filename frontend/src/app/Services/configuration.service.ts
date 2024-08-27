@@ -1,13 +1,18 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { environment } from '../../environments/environment'
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { catchError, map } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { type Observable } from 'rxjs'
 
 interface ConfigResponse {
   config: Config
 }
-interface Config {
+export interface Config {
   server: {
     port: number
   }
@@ -17,43 +22,36 @@ interface Config {
     logo: string
     favicon: string
     theme: string
-    showChallengeSolvedNotifications: boolean
-    showChallengeHints: boolean
     showVersionNumber: boolean
-    showHackingInstructor?: boolean  // TODO Remove fallback with v10.0.0
     showGitHubLinks: boolean
+    localBackupEnabled: boolean
     numberOfRandomFakeUsers: number
-    twitterUrl: string
-    facebookUrl: string
-    slackUrl: string
-    redditUrl: string
-    pressKitUrl: string
-    planetOverlayMap: string
-    planetName: string
-    deluxePage: {
-      deluxeDeliveryImage: string
+    altcoinName: string
+    privacyContactEmail: string
+    social: {
+      twitterUrl: string
+      facebookUrl: string
+      slackUrl: string
+      redditUrl: string
+      pressKitUrl: string
+      nftUrl: string
+      questionnaireUrl: string
     }
     recyclePage: {
       topProductImage: string
       bottomProductImage: string
     }
-    altcoinName: string
     welcomeBanner: {
       showOnFirstStart: boolean
       title: string
       message: string
     }
     cookieConsent: {
-      backgroundColor: string
-      textColor: string
-      buttonColor: string
-      buttonTextColor: string
       message: string
       dismissText: string
       linkText: string
       linkUrl: string
     }
-    privacyContactEmail: string
     securityTxt: {
       contact: string
       encryption: string
@@ -63,13 +61,28 @@ interface Config {
       video: string
       subtitles: string
     }
+    easterEggPlanet: {
+      name: string
+      overlayMap: string
+    }
+    googleOauth: {
+      clientId: string
+      authorizedRedirects: any[]
+    }
   }
   challenges: {
-    safetyOverride: boolean
+    showSolvedNotifications: boolean
+    showHints: boolean
+    showMitigations: boolean
+    codingChallengesEnabled: string
+    restrictToTutorialsFirst: boolean
+    safetyMode: string
     overwriteUrlForProductTamperingChallenge: string
+    showFeedbackButtons: boolean
   }
-  hackingInstructor?: {  // TODO Remove optional marker with v10.0.0
+  hackingInstructor: {
     isEnabled: boolean
+    avatarImage: string
   }
   products: any[]
   memories: any[]
@@ -84,11 +97,10 @@ interface Config {
   providedIn: 'root'
 })
 export class ConfigurationService {
-
-  private hostServer = environment.hostServer
-  private host = this.hostServer + '/rest/admin'
+  private readonly hostServer = environment.hostServer
+  private readonly host = this.hostServer + '/rest/admin'
   private configObservable: any
-  constructor (private http: HttpClient) { }
+  constructor (private readonly http: HttpClient) { }
 
   getApplicationConfiguration (): Observable<Config> {
     if (this.configObservable) {

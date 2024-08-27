@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { Component } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms'
 
 import { TwoFactorAuthService } from '../Services/two-factor-auth-service'
 import { ConfigurationService } from '../Services/configuration.service'
 
-import { dom, library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSave, faUnlockAlt } from '@fortawesome/free-solid-svg-icons'
 
 import { forkJoin } from 'rxjs'
@@ -13,7 +18,6 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { SnackBarHelperService } from '../Services/snack-bar-helper.service'
 
 library.add(faUnlockAlt, faSave)
-dom.watch()
 
 @Component({
   selector: 'app-two-factor-auth',
@@ -23,13 +27,13 @@ dom.watch()
 export class TwoFactorAuthComponent {
   public data?: string
 
-  public twoFactorSetupForm: FormGroup = new FormGroup({
-    passwordControl: new FormControl('', [Validators.required]),
-    initalTokenControl: new FormControl('', [Validators.required, Validators.pattern('^[\\d]{6}$')])
+  public twoFactorSetupForm: UntypedFormGroup = new UntypedFormGroup({
+    passwordControl: new UntypedFormControl('', [Validators.required]),
+    initalTokenControl: new UntypedFormControl('', [Validators.required, Validators.pattern('^[\\d]{6}$')])
   })
 
-  public twoFactorDisableForm: FormGroup = new FormGroup({
-    passwordControl: new FormControl('', [Validators.required])
+  public twoFactorDisableForm: UntypedFormGroup = new UntypedFormGroup({
+    passwordControl: new UntypedFormControl('', [Validators.required])
   })
 
   public setupStatus: boolean | null = null
@@ -41,7 +45,7 @@ export class TwoFactorAuthComponent {
 
   private appName = 'OWASP Juice Shop'
 
-  constructor (private twoFactorAuthService: TwoFactorAuthService, private configurationService: ConfigurationService, private snackBar: MatSnackBar, private translateService: TranslateService, private snackBarHelperService: SnackBarHelperService) {}
+  constructor (private readonly twoFactorAuthService: TwoFactorAuthService, private readonly configurationService: ConfigurationService, private readonly snackBar: MatSnackBar, private readonly translateService: TranslateService, private readonly snackBarHelperService: SnackBarHelperService) {}
 
   ngOnInit () {
     this.updateStatus()
@@ -51,10 +55,10 @@ export class TwoFactorAuthComponent {
     const status = this.twoFactorAuthService.status()
     const config = this.configurationService.getApplicationConfiguration()
 
-    forkJoin([status, config]).subscribe(([{ setup, email, secret, setupToken }, config ]) => {
+    forkJoin([status, config]).subscribe(([{ setup, email, secret, setupToken }, config]) => {
       this.setupStatus = setup
       this.appName = config.application.name
-      if (setup === false) {
+      if (!setup) {
         const encodedAppName = encodeURIComponent(this.appName)
         this.totpUrl = `otpauth://totp/${encodedAppName}:${email}?secret=${secret}&issuer=${encodedAppName}`
         this.totpSecret = secret
@@ -68,31 +72,31 @@ export class TwoFactorAuthComponent {
 
   setup () {
     this.twoFactorAuthService.setup(
-      this.twoFactorSetupForm.get('passwordControl')!.value,
-      this.twoFactorSetupForm.get('initalTokenControl')!.value,
+      this.twoFactorSetupForm.get('passwordControl')?.value,
+      this.twoFactorSetupForm.get('initalTokenControl')?.value,
       this.setupToken
     ).subscribe(() => {
       this.setupStatus = true
-      this.snackBarHelperService.openSnackBar('CONFIRM_2FA_SETUP', 'Ok')
+      this.snackBarHelperService.open('CONFIRM_2FA_SETUP')
     }, () => {
-      this.twoFactorSetupForm.get('passwordControl')!.markAsPristine()
-      this.twoFactorSetupForm.get('initalTokenControl')!.markAsPristine()
+      this.twoFactorSetupForm.get('passwordControl')?.markAsPristine()
+      this.twoFactorSetupForm.get('initalTokenControl')?.markAsPristine()
       this.errored = true
     })
   }
 
   disable () {
     this.twoFactorAuthService.disable(
-      this.twoFactorDisableForm.get('passwordControl')!.value
+      this.twoFactorDisableForm.get('passwordControl')?.value
     ).subscribe(() => {
       this.updateStatus().subscribe(
         () => {
           this.setupStatus = false
         }
       )
-      this.snackBarHelperService.openSnackBar('CONFIRM_2FA_DISABLE', 'Ok')
+      this.snackBarHelperService.open('CONFIRM_2FA_DISABLE')
     }, () => {
-      this.twoFactorDisableForm.get('passwordControl')!.markAsPristine()
+      this.twoFactorDisableForm.get('passwordControl')?.markAsPristine()
       this.errored = true
     })
   }

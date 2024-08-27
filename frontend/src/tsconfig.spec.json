@@ -1,8 +1,9 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
-    "module": "commonjs",
+    "module": "es2020",
+    "allowSyntheticDefaultImports": true,
     "types": [
       "jasmine",
       "node"

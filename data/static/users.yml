@@ -25,7 +25,7 @@
     - fullName: 'Administrator'
       cardNum: 4024007105648108
       expMonth: 4
-      expYear: 2086      
+      expYear: 2086
 -
   email: jim
   password: 'ncc-1701'
@@ -112,7 +112,7 @@
     answer: 'Brd?j8sEMziOvvBf§Be?jFZ77H?hgm'
 -
   email: support
-  password: 'J6aVjTgOpRs$?5l+Zkq2AYnCE@RF§P'
+  password: 'J6aVjTgOpRs@?5l!Zkq2AYnCE@RF$P'
   key: support
   role: 'admin'
   securityQuestion:
@@ -165,6 +165,7 @@
   email: bjoern
   password: 'monkey summer birthday are all bad passwords but work just fine in a long passphrase'
   key: bjoern
+  profileImage: '12.png'
   role: 'admin'
   isAdmin: true
   securityQuestion:
@@ -176,7 +177,7 @@
   customDomain: true
   key: bjoernOwasp
   role: 'deluxe'
-  profileImage: '12.jpg'
+  profileImage: '13.jpg'
   securityQuestion:
     id: 7
     answer: 'Zaya' # https://www.youtube.com/watch?v=Lu0-kDdtVf4
@@ -194,9 +195,19 @@
   password: 'i am an awesome accountant'
   key: accountant
   role: 'accounting'
+  lastLoginIp: '123.456.789'
   securityQuestion:
     id: 7
     answer: 'sdAffsdfrefrbgreq3423'
+-
+  email: uvogin
+  password: 'muda-muda > ora-ora' # https://www.youtube.com/watch?v=vnJv8IoLMwc
+  key: uvogin
+  role: 'customer'
+  walletBalance: 100
+  securityQuestion:
+    id: 12
+    answer: 'Silence of the Lambs' # https://www.imdb.com/title/tt0102926/
 -
   email: demo
   password: 'demo'
@@ -220,3 +231,37 @@
       cardNum: 1234567812345678
       expMonth: 12
       expYear: 2099
+-
+  email: john
+  username: j0hNny
+  password: 'y&x5Z#f6W532Z4445#Ae2HkwZVyDb7&oCUaDzFU'
+  key: john
+  role: 'customer'
+-
+  email: emma
+  username: E=ma²
+  password: 'y&x5Z#f6W532ZUf$q3DsdgfgfgxxUsvoCUaDzFU'
+  key: emma
+  role: 'customer'
+-
+  email: stan
+  username: SmilinStan
+  password: 'ship coffin krypt cross estate supply insurance asbestos souvenir'
+  key: stan
+  profileImage: '20.jpg'
+  role: 'deluxe'
+  securityQuestion:
+    id: 10
+    answer: "Used Ship Emporium" # https://monkeyisland.fandom.com/wiki/Stan_S._Stanman
+-
+  email: ethereum
+  username: evmrox
+  password: 'private'
+  key: evm
+  role: 'deluxe'
+  feedback:
+    comment: 'Please send me the juicy chatbot NFT in my wallet at /juicy-nft : "purpose betray marriage blame crunch monitor spin slide donate sport lift clutch"'
+    rating: 1
+  securityQuestion:
+    id: 10
+    answer: "Used Emporium"

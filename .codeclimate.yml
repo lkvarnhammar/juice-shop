@@ -1,9 +1,5 @@
 version: "2"
 plugins:
-  eslint:
-    enabled: true
-  csslint:
-    enabled: true
   fixme:
     enabled: true
   duplication:
@@ -23,7 +19,10 @@ checks:
   identical-code:
     enabled: false
 exclude_patterns:
-  - 'data/datacreator.js'
-  - 'frontend/src/assets/private/**/*'
-  - 'Gruntfile.js'
   - '**/*conf.js'
+  - 'Gruntfile.js'
+  - 'data/datacreator.ts'
+  - 'frontend/src/hacking-instructor/**/*.ts'
+  - 'frontend/src/assets/private/*.js'
+  - 'lib/logger.ts'
+  - 'data/static/codefixes/**'

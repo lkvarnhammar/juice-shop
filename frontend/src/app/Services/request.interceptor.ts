@@ -1,10 +1,14 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http'
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
+import { type HttpEvent, type HttpHandler, type HttpInterceptor, type HttpRequest } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { Observable } from 'rxjs'
+import { type Observable } from 'rxjs'
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
-
   intercept (req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (localStorage.getItem('token')) {
       req = req.clone({
@@ -22,5 +26,4 @@ export class RequestInterceptor implements HttpInterceptor {
     }
     return next.handle(req)
   }
-
 }

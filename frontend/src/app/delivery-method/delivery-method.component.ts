@@ -1,9 +1,20 @@
-import { Component, OnInit } from '@angular/core'
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
+import { Component, NgZone, type OnInit } from '@angular/core'
 import { DeliveryService } from '../Services/delivery.service'
 import { AddressService } from '../Services/address.service'
 import { MatTableDataSource } from '@angular/material/table'
 import { Router } from '@angular/router'
-import { DeliveryMethod } from '../Models/deliveryMethod.model'
+import { Location } from '@angular/common'
+import { type DeliveryMethod } from '../Models/deliveryMethod.model'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faRocket, faShippingFast, faTruck } from '@fortawesome/free-solid-svg-icons'
+import { SelectionModel } from '@angular/cdk/collections'
+
+library.add(faRocket, faShippingFast, faTruck)
 
 @Component({
   selector: 'app-delivery-method',
@@ -11,32 +22,42 @@ import { DeliveryMethod } from '../Models/deliveryMethod.model'
   styleUrls: ['./delivery-method.component.scss']
 })
 export class DeliveryMethodComponent implements OnInit {
-
   public displayedColumns = ['Selection', 'Name', 'Price', 'ETA']
   public methods: DeliveryMethod[]
   public address: any
   public dataSource
-  public deliveryMethodId: Number = undefined
+  public deliveryMethodId: number = undefined
+  selection = new SelectionModel<DeliveryMethod>(false, [])
 
-  constructor (private deliverySerivce: DeliveryService, private addressService: AddressService, private router: Router) { }
+  constructor (private readonly location: Location, private readonly deliverySerivce: DeliveryService,
+    private readonly addressService: AddressService, private readonly router: Router, private readonly ngZone: NgZone) { }
 
   ngOnInit () {
     this.addressService.getById(sessionStorage.getItem('addressId')).subscribe((address) => {
       this.address = address
-    }, (error) => console.log(error))
+    }, (error) => { console.log(error) })
 
     this.deliverySerivce.get().subscribe((methods) => {
+      console.log(methods)
       this.methods = methods
       this.dataSource = new MatTableDataSource<DeliveryMethod>(this.methods)
-    }, (error) => console.log(error))
+    }, (error) => { console.log(error) })
   }
 
   selectMethod (id) {
-    this.deliveryMethodId = id
+    if (this.selection.hasValue() || id) {
+      this.deliveryMethodId = id
+    } else {
+      this.deliveryMethodId = undefined
+    }
+  }
+
+  routeToPreviousUrl () {
+    this.location.back()
   }
 
   chooseDeliveryMethod () {
     sessionStorage.setItem('deliveryMethodId', this.deliveryMethodId.toString())
-    this.router.navigate(['/payment', 'shop'])
+    this.ngZone.run(async () => await this.router.navigate(['/payment', 'shop']))
   }
 }

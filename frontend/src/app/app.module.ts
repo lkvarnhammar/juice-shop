@@ -1,25 +1,26 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { BrowserModule } from '@angular/platform-browser'
-import { NgModule } from '@angular/core'
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http'
 import { CookieModule, CookieService } from 'ngx-cookie'
-import { ReactiveFormsModule } from '@angular/forms'
+import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { Routing } from './app.routing'
 import { OverlayContainer } from '@angular/cdk/overlay'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { TranslateHttpLoader } from '@ngx-translate/http-loader'
-import { QRCodeModule } from 'angular2-qrcode'
-import { BarRatingModule } from 'ng2-bar-rating'
+import { QRCodeModule } from 'anuglar2-qrcode'
 import { ClipboardModule } from 'ngx-clipboard'
 import { FileUploadModule } from 'ng2-file-upload'
 import { SlideshowModule } from 'ng-simple-slideshow'
-import { NgxSpinnerModule } from 'ngx-spinner'
-/* Imported Components */
 import { AppComponent } from './app.component'
 import { AboutComponent } from './about/about.component'
 import { AdministrationComponent } from './administration/administration.component'
 import { BasketComponent } from './basket/basket.component'
 import { LoginComponent } from './login/login.component'
-import { ScoreBoardComponent } from './score-board/score-board.component'
 import { NavbarComponent } from './navbar/navbar.component'
 import { WelcomeComponent } from './welcome/welcome.component'
 import { WelcomeBannerComponent } from './welcome-banner/welcome-banner.component'
@@ -27,25 +28,26 @@ import { SearchResultComponent } from './search-result/search-result.component'
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component'
 import { RegisterComponent } from './register/register.component'
 import { ContactComponent } from './contact/contact.component'
-import { ErasureRequestComponent } from './erasure-request/erasure-request.component'
 import { ChangePasswordComponent } from './change-password/change-password.component'
 import { ProductDetailsComponent } from './product-details/product-details.component'
 import { ComplaintComponent } from './complaint/complaint.component'
-import { TrackOrderComponent } from './track-order/track-order.component'
+import { ChatbotComponent } from './chatbot/chatbot.component'
 import { TrackResultComponent } from './track-result/track-result.component'
 import { RecycleComponent } from './recycle/recycle.component'
 import { QrCodeComponent } from './qr-code/qr-code.component'
 import { UserDetailsComponent } from './user-details/user-details.component'
 import { ServerStartedNotificationComponent } from './server-started-notification/server-started-notification.component'
-import { ChallengeSolvedNotificationComponent } from './challenge-solved-notification/challenge-solved-notification.component'
+import {
+  ChallengeSolvedNotificationComponent
+} from './challenge-solved-notification/challenge-solved-notification.component'
 import { OAuthComponent } from './oauth/oauth.component'
+import { NFTUnlockComponent } from './nft-unlock/nft-unlock.component'
 import { TokenSaleComponent } from './token-sale/token-sale.component'
 import { ProductReviewEditComponent } from './product-review-edit/product-review-edit.component'
 import { TwoFactorAuthEnterComponent } from './two-factor-auth-enter/two-factor-auth-enter.component'
 import { PrivacySecurityComponent } from './privacy-security/privacy-security.component'
 import { ErrorPageComponent } from './error-page/error-page.component'
 import { NgMatSearchBarModule } from 'ng-mat-search-bar'
-/* Imported Services */
 import { RequestInterceptor } from './Services/request.interceptor'
 import { ProductService } from './Services/product.service'
 import { ConfigurationService } from './Services/configuration.service'
@@ -58,15 +60,16 @@ import { CaptchaService } from './Services/captcha.service'
 import { WindowRefService } from './Services/window-ref.service'
 import { ProductReviewService } from './Services/product-review.service'
 import { ComplaintService } from './Services/complaint.service'
+import { ChatbotService } from './Services/chatbot.service'
 import { TrackOrderService } from './Services/track-order.service'
 import { RecycleService } from './Services/recycle.service'
 import { BasketService } from './Services/basket.service'
 import { ChallengeService } from './Services/challenge.service'
 import { DataSubjectService } from './Services/data-subject.service'
 import { ImageCaptchaService } from './Services/image-captcha.service'
+import { KeysService } from './Services/keys.service'
 import { AddressService } from './Services/address.service'
 import { QuantityService } from './Services/quantity.service'
-/* Modules required for Angular Material */
 import { FlexLayoutModule } from '@angular/flex-layout'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { MatToolbarModule } from '@angular/material/toolbar'
@@ -92,9 +95,12 @@ import { MatListModule } from '@angular/material/list'
 import { SidenavComponent } from './sidenav/sidenav.component'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { LayoutModule } from '@angular/cdk/layout'
-import { MatGridListModule, MatRadioModule, MatSnackBarModule } from '@angular/material'
+import { MatGridListModule } from '@angular/material/grid-list'
+import { MatSnackBarModule } from '@angular/material/snack-bar'
+import { MatRadioModule } from '@angular/material/radio'
 import { MatBadgeModule } from '@angular/material/badge'
-/* Internal components */
+import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs'
+import { ScoreBoardModule } from './score-board/score-board.module'
 import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component'
 import { DataExportComponent } from './data-export/data-export.component'
 import { LastLoginIpComponent } from './last-login-ip/last-login-ip.component'
@@ -124,6 +130,14 @@ import { DeluxeUserComponent } from './deluxe-user/deluxe-user.component'
 import { AccountingGuard, AdminGuard, DeluxeGuard, LoginGuard } from './app.guard'
 import { MatPasswordStrengthModule } from '@angular-material-extensions/password-strength'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { FeedbackDetailsComponent } from './feedback-details/feedback-details.component'
+import { MatSliderModule } from '@angular/material/slider'
+import { MatTabsModule } from '@angular/material/tabs'
+import { MatChipsModule } from '@angular/material/chips'
+import { CodeSnippetComponent } from './code-snippet/code-snippet.component'
+import { CodeAreaComponent } from './code-area/code-area.component'
+import { NgxTextDiffModule } from 'ngx-text-diff'
+import { CodeFixesComponent } from './code-fixes/code-fixes.component'
 
 export function HttpLoaderFactory (http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json')
@@ -136,7 +150,6 @@ export function HttpLoaderFactory (http: HttpClient) {
     AdministrationComponent,
     BasketComponent,
     LoginComponent,
-    ScoreBoardComponent,
     NavbarComponent,
     WelcomeComponent,
     WelcomeBannerComponent,
@@ -144,11 +157,10 @@ export function HttpLoaderFactory (http: HttpClient) {
     ForgotPasswordComponent,
     RegisterComponent,
     ContactComponent,
-    ErasureRequestComponent,
     ChangePasswordComponent,
     ProductDetailsComponent,
     ComplaintComponent,
-    TrackOrderComponent,
+    ChatbotComponent,
     TrackResultComponent,
     RecycleComponent,
     QrCodeComponent,
@@ -157,6 +169,7 @@ export function HttpLoaderFactory (http: HttpClient) {
     ChallengeSolvedNotificationComponent,
     OAuthComponent,
     TokenSaleComponent,
+    NFTUnlockComponent,
     ProductReviewEditComponent,
     TwoFactorAuthEnterComponent,
     SidenavComponent,
@@ -183,14 +196,11 @@ export function HttpLoaderFactory (http: HttpClient) {
     OrderHistoryComponent,
     DeliveryMethodComponent,
     PhotoWallComponent,
-    DeluxeUserComponent
-  ],
-  entryComponents: [
-    ProductDetailsComponent,
-    QrCodeComponent,
-    UserDetailsComponent,
-    ProductReviewEditComponent,
-    WelcomeBannerComponent
+    DeluxeUserComponent,
+    FeedbackDetailsComponent,
+    CodeSnippetComponent,
+    CodeAreaComponent,
+    CodeFixesComponent
   ],
   imports: [
     BrowserModule,
@@ -212,12 +222,11 @@ export function HttpLoaderFactory (http: HttpClient) {
     BrowserAnimationsModule,
     SlideshowModule,
     QRCodeModule,
-    BarRatingModule,
     FileUploadModule,
     ClipboardModule,
-    NgxSpinnerModule,
     MatToolbarModule,
     MatIconModule,
+    FormsModule,
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
@@ -243,13 +252,32 @@ export function HttpLoaderFactory (http: HttpClient) {
     MatBadgeModule,
     MatRadioModule,
     MatSnackBarModule,
-    MatSlideToggleModule
+    MatSliderModule,
+    MatTabsModule,
+    MatSlideToggleModule,
+    MatChipsModule,
+    NgxTextDiffModule,
+    HighlightModule,
+    ScoreBoardModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RequestInterceptor,
       multi: true
+    },
+    {
+      provide: HIGHLIGHT_OPTIONS,
+      useValue: {
+        coreLibraryLoader: async () => await import('highlight.js/lib/core'),
+        lineNumbersLoader: async () => await import('highlightjs-line-numbers.js'),
+        languages: {
+          typescript: async () => await import('highlight.js/lib/languages/typescript'),
+          javascript: async () => await import('highlight.js/lib/languages/javascript'),
+          yaml: async () => await import('highlight.js/lib/languages/yaml')
+        }
+      }
     },
     ProductService,
     ConfigurationService,
@@ -263,6 +291,7 @@ export function HttpLoaderFactory (http: HttpClient) {
     WindowRefService,
     ProductReviewService,
     ComplaintService,
+    ChatbotService,
     TrackOrderService,
     RecycleService,
     BasketService,
@@ -274,6 +303,7 @@ export function HttpLoaderFactory (http: HttpClient) {
     AccountingGuard,
     DeluxeGuard,
     ImageCaptchaService,
+    KeysService,
     AddressService,
     QuantityService,
     WalletService,
@@ -283,13 +313,10 @@ export function HttpLoaderFactory (http: HttpClient) {
   ],
   bootstrap: [AppComponent]
 })
-
 export class AppModule {
-
-  constructor (configurationService: ConfigurationService, overlayContainer: OverlayContainer) {
+  constructor (public configurationService: ConfigurationService, public overlayContainer: OverlayContainer) {
     configurationService.getApplicationConfiguration().subscribe((conf) => {
       overlayContainer.getContainerElement().classList.add(conf.application.theme + '-theme')
     })
   }
-
 }

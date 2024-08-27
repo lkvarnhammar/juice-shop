@@ -1,14 +1,39 @@
-// @ts-ignore
-import snarkdown from 'snarkdown' // TODO Remove ts-ignore when https://github.com/developit/snarkdown/pull/74 is merged
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
+import snarkdown from 'snarkdown'
 
 import { LoginAdminInstruction } from './challenges/loginAdmin'
-import { DomXssInstruction } from './challenges/localXss'
+import { DomXssInstruction } from './challenges/domXss'
 import { ScoreBoardInstruction } from './challenges/scoreBoard'
+import { PrivacyPolicyInstruction } from './challenges/privacyPolicy'
+import { LoginJimInstruction } from './challenges/loginJim'
+import { ViewBasketInstruction } from './challenges/viewBasket'
+import { ForgedFeedbackInstruction } from './challenges/forgedFeedback'
+import { PasswordStrengthInstruction } from './challenges/passwordStrength'
+import { BonusPayloadInstruction } from './challenges/bonusPayload'
+import { LoginBenderInstruction } from './challenges/loginBender'
+import { TutorialUnavailableInstruction } from './tutorialUnavailable'
+import { CodingChallengesInstruction } from './challenges/codingChallenges'
+import { AdminSectionInstruction } from './challenges/adminSection'
+import { ReflectedXssInstruction } from './challenges/reflectedXss'
 
 const challengeInstructions: ChallengeInstruction[] = [
   ScoreBoardInstruction,
   LoginAdminInstruction,
-  DomXssInstruction
+  LoginJimInstruction,
+  DomXssInstruction,
+  PrivacyPolicyInstruction,
+  ViewBasketInstruction,
+  ForgedFeedbackInstruction,
+  PasswordStrengthInstruction,
+  BonusPayloadInstruction,
+  LoginBenderInstruction,
+  CodingChallengesInstruction,
+  AdminSectionInstruction,
+  ReflectedXssInstruction
 ]
 
 export interface ChallengeInstruction {
@@ -27,6 +52,11 @@ export interface ChallengeHint {
    */
   fixture: string
   /**
+   * Set to true if the hint should be displayed after the target
+   * Defaults to false (hint displayed before target)
+   */
+  fixtureAfter?: boolean
+  /**
    * Set to true if the hint should not be able to be skipped by clicking on it.
    * Defaults to false
    */
@@ -44,6 +74,9 @@ function loadHint (hint: ChallengeHint): HTMLElement {
     return null as unknown as HTMLElement
   }
 
+  const wrapper = document.createElement('div')
+  wrapper.style.position = 'absolute'
+
   const elem = document.createElement('div')
   elem.id = 'hacking-instructor'
   elem.style.position = 'absolute'
@@ -55,9 +88,11 @@ function loadHint (hint: ChallengeHint): HTMLElement {
   elem.style.borderRadius = '8px'
   elem.style.whiteSpace = 'initial'
   elem.style.lineHeight = '1.3'
-  elem.style.top = `24px`
-  if (hint.unskippable !== true) {
+  elem.style.top = '24px'
+  elem.style.fontFamily = 'Roboto,Helvetica Neue,sans-serif'
+  if (!hint.unskippable) {
     elem.style.cursor = 'pointer'
+    elem.title = 'Double-click to skip'
   }
   elem.style.fontSize = '14px'
   elem.style.display = 'flex'
@@ -75,6 +110,20 @@ function loadHint (hint: ChallengeHint): HTMLElement {
   textBox.style.flexGrow = '2'
   textBox.innerHTML = snarkdown(hint.text)
 
+  const cancelButton = document.createElement('button')
+  cancelButton.id = 'cancelButton'
+  cancelButton.style.textDecoration = 'none'
+  cancelButton.style.backgroundColor = 'transparent'
+  cancelButton.style.border = 'none'
+  cancelButton.style.color = 'white'
+  cancelButton.innerHTML = '<div style;">&times;</div>'
+  cancelButton.style.fontSize = 'large'
+  cancelButton.title = 'Cancel the tutorial'
+  cancelButton.style.position = 'relative'
+  cancelButton.style.zIndex = '20001'
+  cancelButton.style.bottom = '-22px'
+  cancelButton.style.cursor = 'pointer'
+
   elem.appendChild(picture)
   elem.appendChild(textBox)
 
@@ -82,26 +131,42 @@ function loadHint (hint: ChallengeHint): HTMLElement {
   relAnchor.style.position = 'relative'
   relAnchor.style.display = 'inline'
   relAnchor.appendChild(elem)
+  relAnchor.appendChild(cancelButton)
 
-  target.parentElement!.insertBefore(relAnchor, target)
+  wrapper.appendChild(relAnchor)
 
-  return relAnchor
+  if (hint.fixtureAfter) {
+    // insertAfter does not exist so we simulate it this way
+    target.parentElement.insertBefore(wrapper, target.nextSibling)
+  } else {
+    target.parentElement.insertBefore(wrapper, target)
+  }
+
+  return wrapper
 }
 
-function waitForClick (element: HTMLElement) {
-  return new Promise((resolve) => {
-    element.addEventListener('click', resolve)
+async function waitForDoubleClick (element: HTMLElement) {
+  return await new Promise((resolve) => {
+    element.addEventListener('dblclick', resolve)
   })
 }
 
-export function hasInstructions (challengeName: String): boolean {
+async function waitForCancel (element: HTMLElement) {
+  return await new Promise((resolve) => {
+    element.addEventListener('click', () => {
+      resolve('break')
+    })
+  })
+}
+
+export function hasInstructions (challengeName: string): boolean {
   return challengeInstructions.find(({ name }) => name === challengeName) !== undefined
 }
 
-export async function startHackingInstructorFor (challengeName: String): Promise<void> {
-  const challengeInstruction = challengeInstructions.find(({ name }) => name === challengeName)
+export async function startHackingInstructorFor (challengeName: string): Promise<void> {
+  const challengeInstruction = challengeInstructions.find(({ name }) => name === challengeName) ?? TutorialUnavailableInstruction
 
-  for (const hint of challengeInstruction!.hints) {
+  for (const hint of challengeInstruction.hints) {
     const element = loadHint(hint)
     if (!element) {
       console.warn(`Could not find Element with fixture "${hint.fixture}"`)
@@ -109,15 +174,21 @@ export async function startHackingInstructorFor (challengeName: String): Promise
     }
     element.scrollIntoView()
 
-    const continueConditions: Promise<void | {}>[] = [
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    const continueConditions: Array<Promise<void | unknown>> = [
       hint.resolved()
     ]
 
-    if (hint.unskippable !== true) {
-      continueConditions.push(waitForClick(element))
+    if (!hint.unskippable) {
+      continueConditions.push(waitForDoubleClick(element))
     }
+    continueConditions.push(waitForCancel(document.getElementById('cancelButton')))
 
-    await Promise.race(continueConditions)
+    const command = await Promise.race(continueConditions)
+    if (command === 'break') {
+      element.remove()
+      break
+    }
 
     element.remove()
   }

@@ -1,14 +1,19 @@
-import { Component, OnInit } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
+import { Component, type OnInit } from '@angular/core'
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms'
 import { mimeType } from './mime-type.validator'
 import { PhotoWallService } from '../Services/photo-wall.service'
-import { IImage } from 'ng-simple-slideshow'
+import { type IImage } from 'ng-simple-slideshow'
 import { ConfigurationService } from '../Services/configuration.service'
-import { dom, library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTwitter } from '@fortawesome/free-brands-svg-icons'
+import { SnackBarHelperService } from '../Services/snack-bar-helper.service'
 
 library.add(faTwitter)
-dom.watch()
 
 @Component({
   selector: 'app-photo-wall',
@@ -16,17 +21,18 @@ dom.watch()
   styleUrls: ['./photo-wall.component.scss']
 })
 export class PhotoWallComponent implements OnInit {
-
   public emptyState: boolean = true
   public imagePreview: string
-  public form: FormGroup = new FormGroup({
-    image: new FormControl('', { validators: [Validators.required], asyncValidators: [mimeType] }),
-    caption: new FormControl('', [Validators.required])
+  public form: UntypedFormGroup = new UntypedFormGroup({
+    image: new UntypedFormControl('', { validators: [Validators.required], asyncValidators: [mimeType] }),
+    caption: new UntypedFormControl('', [Validators.required])
   })
+
   public slideshowDataSource: IImage[] = []
   public twitterHandle = null
 
-  constructor (private photoWallService: PhotoWallService, private configurationService: ConfigurationService) { }
+  constructor (private readonly photoWallService: PhotoWallService, private readonly configurationService: ConfigurationService,
+    private readonly snackBarHelperService: SnackBarHelperService) { }
 
   ngOnInit () {
     this.slideshowDataSource = []
@@ -37,16 +43,20 @@ export class PhotoWallComponent implements OnInit {
         this.emptyState = false
       }
       for (const memory of memories) {
+        if (memory.User?.username) {
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          memory.caption = `${memory.caption} (© ${memory.User.username})`
+        }
         this.slideshowDataSource.push({ url: memory.imagePath, caption: memory.caption })
       }
-    },(err) => console.log(err))
+    }, (err) => { console.log(err) })
     this.configurationService.getApplicationConfiguration().subscribe((config) => {
-      if (config && config.application) {
-        if (config.application.twitterUrl) {
-          this.twitterHandle = config.application.twitterUrl.replace('https://twitter.com/','@')
+      if (config?.application?.social) {
+        if (config.application.social.twitterUrl) {
+          this.twitterHandle = config.application.social.twitterUrl.replace('https://twitter.com/', '@')
         }
       }
-    },(err) => console.log(err))
+    }, (err) => { console.log(err) })
   }
 
   onImagePicked (event: Event) {
@@ -64,7 +74,11 @@ export class PhotoWallComponent implements OnInit {
     this.photoWallService.addMemory(this.form.value.caption, this.form.value.image).subscribe(() => {
       this.resetForm()
       this.ngOnInit()
-    },(err) => console.log(err))
+      this.snackBarHelperService.open('IMAGE_UPLOAD_SUCCESS', 'confirmBar')
+    }, (err) => {
+      this.snackBarHelperService.open(err.error?.error, 'errorBar')
+      console.log(err)
+    })
   }
 
   isLoggedIn () {

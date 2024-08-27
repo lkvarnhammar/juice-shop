@@ -1,11 +1,14 @@
 application:
   logo: JuiceShopCTF_Logo.png
   favicon: favicon_ctf.ico
-  showChallengeHints: false
   showVersionNumber: false
   showGitHubLinks: false
+  localBackupEnabled: false
   welcomeBanner:
     showOnFirstStart: false
+challenges:
+  showHints: false
+  showFeedbackButtons: false
 hackingInstructor:
   isEnabled: false
 ctf:
@@ -129,9 +132,6 @@ ctf:
     oauthUserPasswordChallenge:
       name: South Sudan
       code: SS
-    loginCisoChallenge:
-      name: Angola
-      code: AO
     loginSupportChallenge:
       name: Croatia
       code: HR
@@ -282,3 +282,57 @@ ctf:
     svgInjectionChallenge:
       name: Tunisia
       code: TN
+    exposedMetricsChallenge:
+      name: Japan
+      code: JP
+    freeDeluxeChallenge:
+      name: Vietnam
+      code: VN
+    csrfChallenge:
+      name: Luxembourg
+      code: LU
+    xssBonusChallenge:
+      name: Ethiopia
+      code: ET
+    resetPasswordUvoginChallenge:
+      name: Republic of South Africa
+      code: RSA
+    geoStalkingMetaChallenge:
+      name: Belgium
+      code: BE
+    geoStalkingVisualChallenge:
+      name: The Netherlands
+      code: NL
+    killChatbotChallenge:
+      name: Czechoslovakia
+      code: CSK
+    nullByteChallenge:
+      name: Burundi
+      code: BI
+    bullyChatbotChallenge:
+      name: Guam
+      code: GU
+    lfrChallenge:
+      name: Ireland
+      code: IE
+    closeNotificationsChallenge:
+      name: Zambia
+      code: ZM
+    emptyUserRegistration:
+      name: Kenya
+      code: KE
+    nftUnlockChallenge:
+      name: Afghanistan
+      code: AF
+    nftMintChallenge:
+      name: United Arab Emirates
+      code: UAE
+    web3WalletChallenge:
+      name: Mexico
+      code: MEX
+    web3SandboxChallenge:
+      name: France
+      code: FR
+    csafChallenge:
+      name: Slovenia
+      code: SI

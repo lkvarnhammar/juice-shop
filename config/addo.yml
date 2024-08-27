@@ -5,32 +5,38 @@ application:
   favicon: 'https://www.sonatype.com/hubfs/ADDO-2018/ADDO_fav4.png'
   theme: pink-bluegrey
   showGitHubLinks: false
-  twitterUrl: 'https://twitter.com/AllDayDevOps'
-  facebookUrl: 'https://www.facebook.com/AllDayDevOps/'
-  slackUrl: 'https://join.slack.com/t/alldaydevops/shared_invite/enQtNzc3NDc2NDQ2OTAwLTRhMjBjNTg2NTM4ZWRmZmQxMDEyNGNmMDI1OGM2ZDMzYjUwZmY4Mjc0NGJiODJkNjVhYmU2ZTBmNGZlNDUwMjc'
-  redditUrl: null
-  pressKitUrl: 'https://www.alldaydevops.com/2019resources'
-  planetOverlayMap: 'https://www.sonatype.com/hubfs/2019-ADDO/BG_Bobby-2019_3.png'
-  planetName: 'A-DD-0'
+  altcoinName: ADDcOin
+  privacyContactEmail: 'donotreply@ad.do'
+  customMetricsPrefix: addo
+  chatBot:
+    name: 'Bobby'
+    avatar: 'https://www.alldaydevops.com/hs-fs/hubfs/2019-ADDO/2019-footer-bobby-1.png?width=135&name=2019-footer-bobby-1.png'
+  social:
+    twitterUrl: 'https://twitter.com/AllDayDevOps'
+    facebookUrl: 'https://www.facebook.com/AllDayDevOps/'
+    slackUrl: 'https://join.slack.com/t/alldaydevops/shared_invite/enQtNzc3NDc2NDQ2OTAwLTRhMjBjNTg2NTM4ZWRmZmQxMDEyNGNmMDI1OGM2ZDMzYjUwZmY4Mjc0NGJiODJkNjVhYmU2ZTBmNGZlNDUwMjc'
+    redditUrl: null
+    pressKitUrl: 'https://www.alldaydevops.com/2019resources'
+    nftUrl: null
+    questionnaireUrl: null
   recyclePage:
     topProductImage: undefined.png
     bottomProductImage: undefined.png
-  altcoinName: ADDcOin
   welcomeBanner:
     showOnFirstStart: false
   cookieConsent:
-    backgroundColor: '#c2185b'
-    textColor: '#ffffff'
-    buttonColor: '#b0bec5'
-    buttonTextColor: '#000000'
     message: 'Taste our 150 practitioner-baked cookies with 5 tracking flavors!'
     dismissText: 'Register for 24/7 cookies!'
     linkText: 'Yum, tell me more!'
     linkUrl: 'https://www.alldaydevops.com/privacy-policy-addo'
-  privacyContactEmail: 'donotreply@ad.do'
   securityTxt:
     contact: 'mailto:donotreply@ad.do'
     encryption: ~
+  easterEggPlanet:
+    name: 'A-DD-0'
+    overlayMap: 'https://www.sonatype.com/hubfs/2019-ADDO/BG_Bobby-2019_3.png'
+challenges:
+  xssBonusPayload: '<iframe width="560" height="315" src="https://www.youtube.com/embed/-Q6ergK_mXw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
 hackingInstructor:
   avatarImage: 'https://www.alldaydevops.com/hs-fs/hubfs/2019-ADDO/2019-footer-bobby-1.png?width=135&name=2019-footer-bobby-1.png'
 products:
@@ -39,6 +45,8 @@ products:
     price: 14.95
     image: 'https://www.alldaydevops.com/hubfs/2019-ADDO/Operation%20Graphics/ADDO_book_covers_yellow_forHS.jpg'
     fileForRetrieveBlueprintChallenge: 'https://sptf.info/images/pn1_fbl.pdf'
+    exifForBlueprintChallenge:
+      - ~
   - name: 'DevSecOps Reference Architectures 2019'
     description: 'Gloriously referential! Whitepaperesquely architectural!'
     price: 42.00
@@ -63,7 +71,7 @@ products:
     price: 39.99
     image: 'https://www.alldaydevops.com/hubfs/ADDO-2018/Cover-ModernInfrastructure@2x.png'
     reviews:
-      - { text: 'I read on PasteBin somewhere that 303 lasers are really dangerous, so why do you (kind of) put one into this product? Are you crazy?!', author: bjoern }
+      - { text: 'I read on PasteBin somewhere that 303 lasers are really dangerous, so why do you (kind of) put one into this product? Are you crazy?!', author: bjoernOwasp }
     keywordsForPastebinDataLeakChallenge:
       - '101'
       - '202'
@@ -81,7 +89,7 @@ products:
     quantity: 0
     image: 'https://www.alldaydevops.com/hubfs/Bjorn_Kimminich.jpg'
     reviews:
-      - { text: 'Man, dis dude is a loony!', author: mc.safesearch }
+      - { text: 'Man, dis dude is a loony!', author: rapper }
   -
     name: 'ADDO Music Collection'
     description: 'All the all-time classics in one collection.'
@@ -101,3 +109,13 @@ memories:
     image: 'https://pbs.twimg.com/media/EH1dQzVWoAA11q5?format=jpg&name=medium'
     caption: '"WE LOVE OUR SPEAKERS" - @AllDayDevOps - You clearly do! 😮😯😲😀😃😁'
     user: bjoernOwasp
+  -
+    image: 'favorite-hiking-place.png'
+    caption: 'I love going hiking here...'
+    geoStalkingMetaSecurityQuestion: 14
+    geoStalkingMetaSecurityAnswer: 'Daniel Boone National Forest'
+  -
+    image: 'IMG_4253.jpg'
+    caption: 'My old workplace...'
+    geoStalkingVisualSecurityQuestion: 10
+    geoStalkingVisualSecurityAnswer: 'ITsec'

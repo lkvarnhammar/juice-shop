@@ -1,28 +1,35 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { MatCardModule } from '@angular/material/card'
 import { MatFormFieldModule } from '@angular/material/form-field'
-import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing'
+import { type ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
 import { AddressCreateComponent } from './address-create.component'
 import { MatInputModule } from '@angular/material/input'
 import { ReactiveFormsModule } from '@angular/forms'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { BarRatingModule } from 'ng2-bar-rating'
+
 import { of, throwError } from 'rxjs'
 import { RouterTestingModule } from '@angular/router/testing'
 import { AddressService } from '../Services/address.service'
 import { MatGridListModule } from '@angular/material/grid-list'
 import { EventEmitter } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'
 
 describe('AddressCreateComponent', () => {
   let component: AddressCreateComponent
   let fixture: ComponentFixture<AddressCreateComponent>
   let addressService
   let translateService
+  let snackBar: any
 
-  beforeEach(async(() => {
-
-    addressService = jasmine.createSpyObj('AddressService',['getById', 'put', 'save'])
+  beforeEach(waitForAsync(() => {
+    addressService = jasmine.createSpyObj('AddressService', ['getById', 'put', 'save'])
     addressService.save.and.returnValue(of({}))
     addressService.getById.and.returnValue(of({}))
     addressService.put.and.returnValue(of({}))
@@ -31,6 +38,8 @@ describe('AddressCreateComponent', () => {
     translateService.onLangChange = new EventEmitter()
     translateService.onTranslationChange = new EventEmitter()
     translateService.onDefaultLangChange = new EventEmitter()
+    snackBar = jasmine.createSpyObj('MatSnackBar', ['open'])
+    snackBar.open.and.returnValue(null)
 
     TestBed.configureTestingModule({
       imports: [
@@ -38,20 +47,23 @@ describe('AddressCreateComponent', () => {
         TranslateModule.forRoot(),
         HttpClientTestingModule,
         ReactiveFormsModule,
-        BarRatingModule,
+
         BrowserAnimationsModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
-        MatGridListModule
+        MatGridListModule,
+        MatIconModule,
+        MatSnackBarModule
       ],
-      declarations: [ AddressCreateComponent],
+      declarations: [AddressCreateComponent],
       providers: [
         { provide: AddressService, useValue: addressService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: TranslateService, useValue: translateService },
+        { provide: MatSnackBar, useValue: snackBar }
       ]
     })
-    .compileComponents()
+      .compileComponents()
   }))
 
   beforeEach(() => {
@@ -133,7 +145,7 @@ describe('AddressCreateComponent', () => {
 
   it('pin code should not be more than 8 characters', () => {
     let str: string = ''
-    for (let i = 0;i < 9;++i) {
+    for (let i = 0; i < 9; ++i) {
       str += 'a'
     }
     component.pinControl.setValue(str)
@@ -145,7 +157,7 @@ describe('AddressCreateComponent', () => {
 
   it('address should not be more than 160 characters', () => {
     let str: string = ''
-    for (let i = 0;i < 161;++i) {
+    for (let i = 0; i < 161; ++i) {
       str += 'a'
     }
     component.addressControl.setValue(str)
@@ -170,8 +182,8 @@ describe('AddressCreateComponent', () => {
     addressService.put.and.returnValue(of({ city: 'NY' }))
     translateService.get.and.returnValue(of('ADDRESS_UPDATED'))
     component.mode = 'edit'
-    spyOn(component,'resetForm')
-    spyOn(component,'ngOnInit')
+    spyOn(component, 'resetForm')
+    spyOn(component, 'ngOnInit')
     component.save()
     expect(translateService.get).toHaveBeenCalledWith('ADDRESS_UPDATED', { city: 'NY' })
     expect(component.ngOnInit).toHaveBeenCalled()
@@ -181,8 +193,8 @@ describe('AddressCreateComponent', () => {
   it('should reset the form on adding address and show confirmation', () => {
     addressService.save.and.returnValue(of({ city: 'NY' }))
     translateService.get.and.returnValue(of('ADDRESS_ADDED'))
-    spyOn(component,'resetForm')
-    spyOn(component,'ngOnInit')
+    spyOn(component, 'resetForm')
+    spyOn(component, 'ngOnInit')
     component.save()
     expect(translateService.get).toHaveBeenCalledWith('ADDRESS_ADDED', { city: 'NY' })
     expect(component.ngOnInit).toHaveBeenCalled()
@@ -191,21 +203,19 @@ describe('AddressCreateComponent', () => {
 
   it('should clear the form and display error if saving address fails', fakeAsync(() => {
     addressService.save.and.returnValue(throwError({ error: 'Error' }))
-    spyOn(component,'resetForm')
+    spyOn(component, 'resetForm')
     component.save()
-    expect(component.confirmation).toBeNull()
-    expect(component.error).toBe('Error')
     expect(component.resetForm).toHaveBeenCalled()
+    expect(snackBar.open).toHaveBeenCalled()
   }))
 
   it('should clear the form and display error if updating address fails', fakeAsync(() => {
     addressService.put.and.returnValue(throwError({ error: 'Error' }))
     component.mode = 'edit'
-    spyOn(component,'resetForm')
+    spyOn(component, 'resetForm')
     component.save()
-    expect(component.confirmation).toBeNull()
-    expect(component.error).toBe('Error')
     expect(component.resetForm).toHaveBeenCalled()
+    expect(snackBar.open).toHaveBeenCalled()
   }))
 
   it('should populate the form on calling initializeForm', () => {

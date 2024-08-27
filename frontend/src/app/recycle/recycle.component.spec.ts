@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { ConfigurationService } from '../Services/configuration.service'
@@ -8,7 +13,7 @@ import { MatCardModule } from '@angular/material/card'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { MatButtonModule } from '@angular/material/button'
 import { MatInputModule } from '@angular/material/input'
-import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing'
+import { type ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
 
 import { RecycleComponent } from './recycle.component'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -17,17 +22,16 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatNativeDateModule } from '@angular/material/core'
 import { of, throwError } from 'rxjs'
 import { AddressComponent } from '../address/address.component'
-import {
-  MatDialogModule,
-  MatDividerModule,
-  MatIconModule,
-  MatRadioModule,
-  MatTableModule,
-  MatToolbarModule,
-  MatTooltipModule
-} from '@angular/material'
 import { RouterTestingModule } from '@angular/router/testing'
 import { EventEmitter } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
+import { MatTableModule } from '@angular/material/table'
+import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatRadioModule } from '@angular/material/radio'
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { MatDialogModule } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 describe('RecycleComponent', () => {
   let component: RecycleComponent
@@ -36,21 +40,22 @@ describe('RecycleComponent', () => {
   let userService: any
   let configurationService: any
   let translateService
+  let snackBar: any
 
-  beforeEach(async(() => {
-
-    recycleService = jasmine.createSpyObj('RecycleService',['save','find'])
+  beforeEach(waitForAsync(() => {
+    recycleService = jasmine.createSpyObj('RecycleService', ['save', 'find'])
     recycleService.save.and.returnValue(of({}))
     recycleService.find.and.returnValue(of([{}]))
-    userService = jasmine.createSpyObj('UserService',['whoAmI'])
+    userService = jasmine.createSpyObj('UserService', ['whoAmI'])
     userService.whoAmI.and.returnValue(of({}))
-    configurationService = jasmine.createSpyObj('ConfigurationService',['getApplicationConfiguration'])
+    configurationService = jasmine.createSpyObj('ConfigurationService', ['getApplicationConfiguration'])
     configurationService.getApplicationConfiguration.and.returnValue(of({}))
     translateService = jasmine.createSpyObj('TranslateService', ['get'])
     translateService.get.and.returnValue(of({}))
     translateService.onLangChange = new EventEmitter()
     translateService.onTranslationChange = new EventEmitter()
     translateService.onDefaultLangChange = new EventEmitter()
+    snackBar = jasmine.createSpyObj('MatSnackBar', ['open'])
 
     TestBed.configureTestingModule({
       imports: [
@@ -74,15 +79,16 @@ describe('RecycleComponent', () => {
         MatDialogModule,
         MatDividerModule
       ],
-      declarations: [ RecycleComponent, AddressComponent ],
+      declarations: [RecycleComponent, AddressComponent],
       providers: [
         { provide: RecycleService, useValue: recycleService },
         { provide: UserService, useValue: userService },
         { provide: ConfigurationService, useValue: configurationService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: TranslateService, useValue: translateService },
+        { provide: MatSnackBar, useValue: snackBar }
       ]
     })
-    .compileComponents()
+      .compileComponents()
   }))
 
   beforeEach(() => {
@@ -133,7 +139,7 @@ describe('RecycleComponent', () => {
     recycleService.save.and.returnValue(of({}))
     userService.whoAmI.and.returnValue(of({}))
     translateService.get.and.returnValue(of('CONFIRM_RECYCLING_BOX'))
-    spyOn(component,'initRecycle')
+    spyOn(component, 'initRecycle')
     spyOn(component.addressComponent, 'load')
     component.addressId = '1'
     component.recycleQuantityControl.setValue(100)
@@ -151,7 +157,7 @@ describe('RecycleComponent', () => {
     recycleService.save.and.returnValue(of({ isPickup: true, pickupDate: '10/7/2018' }))
     userService.whoAmI.and.returnValue(of({}))
     translateService.get.and.returnValue(of('CONFIRM_RECYCLING_PICKUP'))
-    spyOn(component,'initRecycle')
+    spyOn(component, 'initRecycle')
     spyOn(component.addressComponent, 'load')
     component.addressId = '1'
     component.recycleQuantityControl.setValue(100)
@@ -167,7 +173,7 @@ describe('RecycleComponent', () => {
   })
 
   it('should hold existing recycles', () => {
-    recycleService.find.and.returnValue(of([ { quantity: 1 }, { quantity: 2 }]))
+    recycleService.find.and.returnValue(of([{ quantity: 1 }, { quantity: 2 }]))
     component.ngOnInit()
     expect(component.recycles.length).toBe(2)
     expect(component.recycles[0].quantity).toBe(1)
@@ -180,12 +186,12 @@ describe('RecycleComponent', () => {
     expect(component.recycles.length).toBe(0)
   })
 
-  it('should hold nothing on error from backend API', () => fakeAsync(() => {
+  it('should hold nothing on error from backend API', () => {
     recycleService.find.and.returnValue(throwError('Error'))
     console.log = jasmine.createSpy('log')
     component.ngOnInit()
     expect(console.log).toHaveBeenCalledWith('Error')
-  }))
+  })
 
   it('should log the error on retrieving the user', fakeAsync(() => {
     userService.whoAmI.and.returnValue(throwError('Error'))

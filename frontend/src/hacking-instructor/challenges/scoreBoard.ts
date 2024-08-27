@@ -1,7 +1,12 @@
+/*
+ * Copyright (c) 2014-2024 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * SPDX-License-Identifier: MIT
+ */
+
 import {
-  waitInMs, waitForAngularRouteToBeVisited
+  waitInMs, waitForAngularRouteToBeVisited, waitForDevTools
 } from '../helpers/helpers'
-import { ChallengeInstruction } from '../'
+import { type ChallengeInstruction } from '../'
 
 export const ScoreBoardInstruction: ChallengeInstruction = {
   name: 'Score Board',
@@ -27,7 +32,13 @@ export const ScoreBoardInstruction: ChallengeInstruction = {
     },
     {
       text:
-        "You find the JavaScript code in the DevTools of your browser that will open with `F12`. Or you just start URL guessing. It's up to you!",
+        'You find the JavaScript code in the DevTools of your browser that will open with `F12`.',
+      fixture: 'app-navbar',
+      resolved: waitForDevTools()
+    },
+    {
+      text:
+        "Look through the client-side JavaScript in the _Sources_ tab for clues. Or just start URL guessing. It's up to you!",
       fixture: 'app-navbar',
       unskippable: true,
       resolved: waitForAngularRouteToBeVisited('score-board')
